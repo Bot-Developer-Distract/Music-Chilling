@@ -14,7 +14,7 @@ module.exports = {
      * @param {String[]} args 
      */
     async execute(client, message, args) {
-        if(!args[0]) message.lineReply("Cung cấp video để phát");
+        if(!args[0]) return message.lineReply("Cung cấp video để phát");
          
         const query = args.join(" ");
         const searchResult = await client.player
@@ -22,8 +22,8 @@ module.exports = {
                 requestedBy: message.author,
                 searchEngine: QueryType.AUTO
             })
-            .catch(() => {
-
+            .catch(err => {
+                console.log(err)
             });
             if (!searchResult || !searchResult.tracks.length) return message.lineReply("Không tìm thấy kết quả!");
 
@@ -38,13 +38,14 @@ module.exports = {
             void client.player.deleteQueue(message.guildId);
             return message.lineReply("Bot không thể vào phòng của bạn thử lại sau!");
         }
-
-        message.lineReply(`Đang tải...`);
-
-        await searchResult.playlist ? queue.addTracks(searchResult.tracks) : queue.addTrack(searchResult.tracks[0]);
         
-        searchResult.playlist
+        await searchResult.playlist ? queue.addTracks(searchResult.tracks) : queue.addTrack(searchResult.tracks[0]);
 
-        if (!queue.playing) await queue.play();
+        if (!queue.playing) {
+            await queue.play();
+            await message.lineReply('Đang chơi **' + searchResult.tracks[0] + "**!");
+        } else {
+            await message.lineReply('Đã thêm **' + searchResult.tracks[0] + "** vào hàng chờ!");
+        }
     }
 }

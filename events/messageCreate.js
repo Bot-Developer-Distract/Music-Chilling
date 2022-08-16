@@ -1,25 +1,28 @@
 const client = require('../index');
 
-client.on('messageCreate', (message) => {
-    if (message.author.bot || message.channel.type == "dm" || !message.content.startsWith(client.config.PREFIX)) return;
+client.on('messageCreate', async message => {
+    if (message.author.bot || !message.content.startsWith(client.config.prefix)) return;
     
-    const args = message.content.slice(client.config.PREFIX.length).split(/ +/);
+    const args = message.content.slice(client.config.prefix.length).split(/ +/);
     const cmdName = args.shift().toLowerCase();
 
     const cmd = client.commands.get(cmdName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(cmdName));
 
     function lineReply(content, mention) {
-        if (!mention) message.reply({ content: content, allowedMentions: { repliedUser: false } });
-        if (mention) message.reply({ content: content, allowedMentions: { repliedUser: true } });
+        if(!mention) mention = false;
+        return message.reply({ content: content, allowedMentions: { repliedUser: mention } });
     }
 
     message.lineReply = lineReply;
 
     if (!cmd) return;
 
-    if(cmd.category == "music" && !message.member?.voice.channel)
-        return lineReply("Bạn phải kết nối vào phòng thoại!");
-
+    if (cmd.category = 'music') {
+        if (!message.member.voice.channelId)
+            return await lineReply("Tham gia bất kì voice nào để sử dụng lệnh!");
+        if (message.guild.members.me.voice.channelId && message.member.voice.channelId !== message.guild.members.me.voice.channelId)
+            return await lineReply("Bạn không có trong voice của bot!");
+    }
     
     cmd.execute(client, message, args);
 });
