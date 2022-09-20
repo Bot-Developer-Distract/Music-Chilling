@@ -1,18 +1,21 @@
 const { joinVoiceChannel } = require('@discordjs/voice');
+const { ApplicationCommandType } = require("discord.js");
+
 module.exports = {
     name: "join",
     description: "Tham gia phòng thoại của bạn",
-    aliases: ["connect"],
+    type: ApplicationCommandType.ChatInput,
     category: "music",
 
-    async execute(client, message, args) {
-        if(message.member.voice.channel && message.member.voice.channel == message.guild.me.voice.channel) return;
+    async execute(client, interaction) {
+        if (interaction.member.voice.channel && interaction.member.voice.channel == interaction.guild.members.me.voice.channel) return;
 
-        message.react("👌");
+        await interaction.reply('Đã tham gia voice của bạn!');
+
         joinVoiceChannel({
-            channelId: message.member.voice.channel.id,
-            guildId: message.guildId,
-            adapterCreator: message.guild.voiceAdapterCreator,
+            channelId: interaction.member.voice.channel.id,
+            guildId: interaction.guildId,
+            adapterCreator: interaction.guild.voiceAdapterCreator,
         });
     }
 }

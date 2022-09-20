@@ -1,19 +1,24 @@
 const { joinVoiceChannel } = require('@discordjs/voice');
+const { ApplicationCommandType } = require("discord.js");
+
 module.exports = {
     name: "leave",
     description: "Thoát khỏi phòng thoại",
-    aliases: ["disconnect"],
+    type: ApplicationCommandType.ChatInput,
     category: "music",
 
-    async execute(client, message, args) {
-        if(!message.member.voice.channel && message.member.voice.channel !== message.guild.me.voice.channel) return;
+    async execute(client, interaction) {
+        if (!interaction.member.voice.channel && interaction.member.voice.channel !== interaction.guild.me.voice.channel)
+            return await interaction.reply("Bot không ở trong voice của bạn!");
+
+        await interaction.reply("Đã thoát khỏi voice của bạn!");
 
         const connection = joinVoiceChannel({
-            channelId: message.member.voice.channel.id,
-            guildId: message.guildId,
-            adapterCreator: message.guild.voiceAdapterCreator,
+            channelId: interaction.member.voice.channel.id,
+            guildId: interaction.guildId,
+            adapterCreator: interaction.guild.voiceAdapterCreator,
         });
+
         connection.destroy();
-        message.react("👌");
     }
 }

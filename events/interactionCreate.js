@@ -4,7 +4,7 @@ const client = require('../index');
 client.on('interactionCreate', async (interaction) => {
     if(interaction.type !== InteractionType.ApplicationCommand) return;
 
-    const cmd = client.slashCommands.get(interaction.commandName);
+    const cmd = client.commands.get(interaction.commandName);
 
     if(!cmd) return;
 
@@ -14,6 +14,6 @@ client.on('interactionCreate', async (interaction) => {
         if (interaction.guild.members.me.voice.channelId && interaction.member.voice.channelId !== interaction.guild.members.me.voice.channelId)
             return await interaction.reply({ content: "Bạn không có trong voice của bot!", ephemeral: true });
     }
-    
+        
     cmd.execute(client, interaction);
 })

@@ -12,7 +12,6 @@ const { Player } = require("discord-player");
 require('dotenv').config();
 
 client.commands = new Collection();
-client.slashCommands = new Collection();
 
 client.config = {
     prefix: "!"
@@ -29,14 +28,11 @@ player.use("YOUTUBE_DL", downloader);
 
 client.player = player;
 
-// player.on("trackStart", (queue, track) => {
-//     if(queue.metadata.channel) queue.metadata.channel.send(`Đang chơi: **${track.title}**!`)
-// });
-
-player.on('error', (q, e) => console.log(q, e))
-player.on('connectionError', (q, e) => console.log(q, e));
+player.on('error', (q, e) => console.log(e, '\nError'));
+player.on('connectionError', (q, e) => console.log(e, '\nConnection error'));
 module.exports = client;
 
-require('./handler/baseHandler');
+require('./handler');
 
 client.login(process.env.TOKEN, err => console.log(err));
+client.on('error', err => console.log(err));
